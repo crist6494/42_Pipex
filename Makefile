@@ -9,6 +9,7 @@ SRC_DIR	=	./src/
 OBJ_DIR	=	./obj/
 
 SRCS =	pipex.c \
+		utils.c \
 
 OBJS = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
 
