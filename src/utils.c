@@ -6,7 +6,7 @@
 /*   By: cmorales <moralesrojascr@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 17:51:07 by cmorales          #+#    #+#             */
-/*   Updated: 2022/09/14 18:54:27 by cmorales         ###   ########.fr       */
+/*   Updated: 2022/09/15 21:07:32 by cmorales         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,14 @@ void	ft_check_fd(int fd)
 {
 	if (fd == -1)
 		perror("Pipex:");
+}
+
+void	ft_cmd_not_found(char **cmd, char *path)
+{
+	perror("Pipex: command not found");
+	ft_free_paths(cmd);
+	free(path);
+	exit(1);
 }
 
 void	ft_free_paths(char **paths)
@@ -57,7 +65,7 @@ char	*ft_get_the_path(char *cmd, char **envp)
 	all_the_paths = ft_all_the_paths(envp);
 	while (all_the_paths[i])
 	{
-		slash = ft_strjoin(all_the_paths[i], '/');
+		slash = ft_strjoin(all_the_paths[i], "/");
 		path = ft_strjoin(slash, cmd);
 		free(slash);
 		if (access(path, F_OK | X_OK) == 0)
