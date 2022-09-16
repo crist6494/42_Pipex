@@ -6,7 +6,7 @@
 /*   By: cmorales <moralesrojascr@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 17:51:07 by cmorales          #+#    #+#             */
-/*   Updated: 2022/09/15 21:07:32 by cmorales         ###   ########.fr       */
+/*   Updated: 2022/09/16 20:36:56 by cmorales         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ char	**ft_all_the_paths(char **envp)
 }
 
 
-char	*ft_get_the_path(char *cmd, char **envp)
+char	*ft_get_path(char *cmd, char **envp)
 {
 	char	**all_the_paths;
 	char	*path;
