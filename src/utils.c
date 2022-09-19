@@ -6,36 +6,39 @@
 /*   By: cmorales <moralesrojascr@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 17:51:07 by cmorales          #+#    #+#             */
-/*   Updated: 2022/09/16 20:36:56 by cmorales         ###   ########.fr       */
+/*   Updated: 2022/09/19 20:00:59 by cmorales         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-void	ft_check_fd(int fd)
+void	ft_error(char *text)
 {
-	if (fd == -1)
-		perror("Pipex:");
+	if (errno == 0)
+		write(2, "Error\n", 6);
+	else
+		perror(text);
+	exit(EXIT_FAILURE);
 }
 
-void	ft_cmd_not_found(char **cmd, char *path)
+void	ft_cmd_not_found(char **cmd)
 {
 	perror("Pipex: command not found");
 	ft_free_paths(cmd);
-	free(path);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 void	ft_free_paths(char **paths)
 {
+	int	len;
 	int	i;
 
 	i = 0;
-	while (paths[i])
-	{
-		free(paths[i]);
-		i++;
-	}
+	len = 0;
+	while (paths[len])
+		len++;
+	while (i < len)
+		free(paths[i++]);
 	free(paths);
 }
 
@@ -43,16 +46,15 @@ char	**ft_all_the_paths(char **envp)
 {
 	char	**paths;
 	int		i;
-	
+
 	i = 0;
 	while (ft_strncmp(envp[i], "PATH=", 5))
 		i++;
 	if (!envp[i])
-		return(0);
+		return (0);
 	paths = ft_split(envp[i] + 5, ':');
 	return (paths);
 }
-
 
 char	*ft_get_path(char *cmd, char **envp)
 {
@@ -60,7 +62,7 @@ char	*ft_get_path(char *cmd, char **envp)
 	char	*path;
 	char	*slash;
 	int		i;
-	
+
 	i = 0;
 	all_the_paths = ft_all_the_paths(envp);
 	while (all_the_paths[i])

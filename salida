@@ -1,0 +1,12 @@
+total 159
+drwxr-xr-x  7 cmorales  2022_malaga   4096 19 sep 20:36 .
+drwx------  5 cmorales  2022_malaga   4096 19 sep 20:06 ..
+drwxr-xr-x  7 cmorales  2022_malaga   4096 19 sep 20:07 .git
+drwxr-xr-x  4 cmorales  2022_malaga   4096 19 sep 18:00 42-library
+-rw-r--r--  1 cmorales  2022_malaga    613 16 sep 20:04 Makefile
+drwxr-xr-x  2 cmorales  2022_malaga   4096 16 sep 20:04 includes
+-rw-r--r--  1 cmorales  2022_malaga     13 19 sep 20:37 infile
+drwxr-xr-x  2 cmorales  2022_malaga   4096 19 sep 20:07 obj
+-rwxr-xr-x  1 cmorales  2022_malaga  50888 19 sep 20:07 pipex
+-rw-r--r--  1 cmorales  2022_malaga      0 19 sep 20:38 salida
+drwxr-xr-x  2 cmorales  2022_malaga   4096 16 sep 20:04 src
