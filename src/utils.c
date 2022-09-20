@@ -6,7 +6,7 @@
 /*   By: cmorales <moralesrojascr@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/14 17:51:07 by cmorales          #+#    #+#             */
-/*   Updated: 2022/09/19 20:00:59 by cmorales         ###   ########.fr       */
+/*   Updated: 2022/09/20 18:21:52 by cmorales         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ void	ft_error(char *text)
 
 void	ft_cmd_not_found(char **cmd)
 {
-	perror("Pipex: command not found");
+	write(2, cmd[0], ft_strlen(cmd[0]));
+	write(2, ": command not found\n", 20);
 	ft_free_paths(cmd);
 	exit(EXIT_FAILURE);
 }

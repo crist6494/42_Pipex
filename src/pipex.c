@@ -6,7 +6,7 @@
 /*   By: cmorales <moralesrojascr@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/12 19:57:40 by cmorales          #+#    #+#             */
-/*   Updated: 2022/09/19 19:59:55 by cmorales         ###   ########.fr       */
+/*   Updated: 2022/09/20 18:19:46 by cmorales         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	child1_process(int *fd_file, int *fd, char **av, char **envp)
 
 	pid = fork();
 	if (pid == -1)
-		ft_error("Fork:");
+		ft_error("Fork");
 	if (pid == 0)
 	{
 		fd_file[0] = open(av[1], O_RDONLY);
@@ -32,7 +32,7 @@ void	child1_process(int *fd_file, int *fd, char **av, char **envp)
 		if (cmd[0] && ft_get_path(cmd[0], envp))
 		{
 			execve(ft_get_path(cmd[0], envp), cmd, envp);
-			ft_all_the_paths(cmd);
+			ft_free_paths(cmd);
 		}
 		else
 			ft_cmd_not_found(cmd);
@@ -46,7 +46,7 @@ void	child2_process(int *fd_file, int *fd, char **av, char **envp)
 
 	pid = fork();
 	if (pid == -1)
-		ft_error("Fork:");
+		ft_error("Fork");
 	if (pid == 0)
 	{
 		fd_file[1] = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -59,7 +59,7 @@ void	child2_process(int *fd_file, int *fd, char **av, char **envp)
 		if (cmd[0] && ft_get_path(cmd[0], envp))
 		{
 			execve(ft_get_path(cmd[0], envp), cmd, envp);
-			ft_all_the_paths(cmd);
+			ft_free_paths(cmd);
 		}
 		else
 			ft_cmd_not_found(cmd);
