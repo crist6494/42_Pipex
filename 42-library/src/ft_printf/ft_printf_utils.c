@@ -6,12 +6,12 @@
 /*   By: cmorales <moralesrojascr@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/30 17:43:47 by cmorales          #+#    #+#             */
-/*   Updated: 2022/05/31 18:29:33 by cmorales         ###   ########.fr       */
+/*   Updated: 2023/01/31 11:17:41 by cmorales         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-
+/* 
 int	ft_putnbr_fd(int n, int fd, int tc)
 {
 	if (n == -2147483648)
@@ -80,3 +80,4 @@ size_t	ft_strlen(const char	*str)
 	}
 	return (pos);
 }
+ */

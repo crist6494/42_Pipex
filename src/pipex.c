@@ -5,86 +5,143 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: cmorales <moralesrojascr@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/12 19:57:40 by cmorales          #+#    #+#             */
-/*   Updated: 2022/09/20 18:19:46 by cmorales         ###   ########.fr       */
+/*   Created: 2023/02/08 23:17:17 by cmorales          #+#    #+#             */
+/*   Updated: 2023/02/13 12:26:32 by cmorales         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-void	child1_process(int *fd_file, int *fd, char **av, char **envp)
+void	free_strs(char *str, char **strs)
 {
-	char	**cmd;
-	pid_t	pid;
+	int	i;
 
-	pid = fork();
-	if (pid == -1)
-		ft_error("Fork");
-	if (pid == 0)
+	if (str != NULL)
 	{
-		fd_file[0] = open(av[1], O_RDONLY);
-		if (fd_file[0] < 0)
-			ft_error(av[1]);
-		close(fd[0]);
-		dup2(fd_file[0], STDIN_FILENO);
-		dup2(fd[1], STDOUT_FILENO);
-		cmd = ft_split(av[2], ' ');
-		if (cmd[0] && ft_get_path(cmd[0], envp))
+		free(str);
+		str = NULL;
+	}
+	if (strs != NULL)
+	{
+		i = 0;
+		while (strs[i])
 		{
-			execve(ft_get_path(cmd[0], envp), cmd, envp);
-			ft_free_paths(cmd);
+			free(strs[i]);
+			i++;
 		}
-		else
-			ft_cmd_not_found(cmd);
+		free(strs);
+		strs = NULL;
 	}
 }
 
-void	child2_process(int *fd_file, int *fd, char **av, char **envp)
-{
-	char	**cmd;
-	pid_t	pid;
 
-	pid = fork();
-	if (pid == -1)
-		ft_error("Fork");
-	if (pid == 0)
+void	exit_error(int error_status, t_data *data)
+{
+	//printf("Entra aqui\n");
+	if (data)
 	{
-		fd_file[1] = open(av[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (fd_file[1] < 0)
-			ft_error(av[4]);
-		close(fd[1]);
-		dup2(fd[0], STDIN_FILENO);
-		dup2(fd_file[1], STDOUT_FILENO);
-		cmd = ft_split(av[3], ' ');
-		if (cmd[0] && ft_get_path(cmd[0], envp))
-		{
-			execve(ft_get_path(cmd[0], envp), cmd, envp);
-			ft_free_paths(cmd);
-		}
-		else
-			ft_cmd_not_found(cmd);
+		ft_close_pipes(data);
+		if (data->pipe != NULL)
+			free(data->pipe);
+		if (data->pids != NULL)
+			free(data->pids);
+		if (data->cmds != NULL || data->cmd_path != NULL)
+			free_strs(data->cmd_path, data->cmds);
 	}
+	//if (data->heredoc == 1)
+		//unlink(".heredoc.tmp");
+	exit(error_status);
 }
 
-int	main(int argc, char **argv, char **envp)
-{
-	int	fd_file[2];
-	int	fd[2];
 
-	errno = 0;
-	if (argc == 5)
-	{
-		pipe(fd);
-		if (pipe(fd) < 0)
-			ft_error(NULL);
-		child1_process(fd_file, fd, argv, envp);
-		child2_process(fd_file, fd, argv, envp);
-		close(fd[0]);
-		close(fd[1]);
-		waitpid(-1, NULL, 0);
-		waitpid(-1, NULL, 0);
-	}
+static void	ft_redirect_puts(int input, int output, t_data *data)
+{
+
+	(void)data;
+	if(dup2(input, STDIN_FILENO) == -1)
+		ft_error("Input failed");
+	if(dup2(output, STDOUT_FILENO) == -1)
+		ft_error("Output failed");
+}
+
+//redirects the first comand the end or the midle
+static void	child_process(t_data *d)
+{
+	if(d->child == 0)
+		ft_redirect_puts(d->fd_input, d->pipe[1], d);
+	else if (d->child == d->num_cmds - 1)
+		ft_redirect_puts(d->pipe[2 * d->child - 2], d->fd_output, d);
 	else
-		exit(EXIT_FAILURE);
-	return (0);
+		ft_redirect_puts(d->pipe[2 * d->child - 2], d->pipe[2 * d->child + 1], d);
+	ft_close_pipes(d);
+	if(execve(d->cmd_path,d->cmds, d->env) == -1)
+	printf("Entra aqui\n");
+		ft_free_paths(d->cmds);
+}
+
+static int parent_process(t_data *data)
+{
+	pid_t	wpid;
+	int		status;
+	//int		last_child;
+	int		exit_code;
+
+	ft_close_pipes(data);
+	exit_code = 1;
+	data->child--;
+	//last_child = data->pids[data->num_cmds - 1];
+	while(data->child >= 0)
+	{
+		wpid = waitpid(data->pids[data->child], &status, 0);
+		if(wpid == data->pids[data->num_cmds - 1])
+		{
+			if(data->child == (data->num_cmds - 1) && WIFEXITED(status))
+			 {
+				exit_code = WEXITSTATUS(status);
+				//printf("Entra aqui\n");
+			 }
+		}
+		data->child--;
+	}
+	free(data->pids);
+	free(data->pipe);
+	//printf("%d", exit_code);
+	return (exit_code);
+} 
+
+static int pipex(t_data *data)
+{
+	int exit_code;
+	
+	if (pipe(data->pipe) == -1)
+		perror("unexpected error");
+	data->child = 0;
+	while (data->child < data->num_cmds)
+	{
+		data->cmds = ft_split(data->argv[data->child + 2 ], ' ');
+		if (!data->cmds)
+			perror("unexpected error");
+		data->cmd_path = ft_get_path(data->cmds[0], data->env);
+		data->pids[data->child] = fork();
+		if (data->pids[data->child] == -1)
+			perror("unexpected error");
+		else if (data->pids[data->child] == 0)
+			child_process(data);
+		//free_strs(data->cmd_path, data->cmds);
+		data->child++;
+	}
+	exit_code = parent_process(data);
+	return (exit_code);
+}
+
+int main(int argc, char **argv, char **envp)
+{
+	//printf("Hola");
+	t_data data;
+	int	exit_code;
+	
+	printf("Entra aqui\n");
+	data = init(argc, argv, envp);
+	exit_code = pipex(&data);
+	return (exit_code);
 }

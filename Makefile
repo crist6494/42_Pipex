@@ -8,8 +8,12 @@ SRC_DIR	=	./src/
 
 OBJ_DIR	=	./obj/
 
-SRCS =	pipex.c \
+SRCS =	main.c \
+		init.c \
+		pipex.c \
 		utils.c \
+		fd_handler.c \
+		env_parser.c \
 
 OBJS = $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
 

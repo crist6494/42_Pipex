@@ -6,11 +6,11 @@
 /*   By: cmorales <moralesrojascr@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 12:46:34 by cmorales          #+#    #+#             */
-/*   Updated: 2022/05/20 15:27:19 by cmorales         ###   ########.fr       */
+/*   Updated: 2023/01/25 18:10:30 by cmorales         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line_bonus.h"
+/* #include "get_next_line_bonus.h"
 
 void	ft_bzero(void *s, size_t n)
 {
@@ -89,4 +89,4 @@ size_t	ft_strlen(const char *str)
 		pos++;
 	}
 	return (pos);
-}
+} */
